@@ -72,8 +72,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         //Updates
         player.update(delta);
+
         if invaders.update(delta){
             audio.play("move");
+        }
+
+        if player.detect_hits(&mut invaders){
+            audio.play("explode");
         }
 
         //Draw & Render
@@ -84,6 +89,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let _ = render_tx.send(curr_fram);
         thread::sleep(Duration::from_millis(1));
+
+        //Win or Lose
+        if invaders.killed_all() {
+            audio.play("win");
+            break 'gameloop; 
+        }
+
+        if invaders.reached_bottom() {
+            audio.play("lose");
+            break 'gameloop;
+        }
     }
     
     //Cleanup
