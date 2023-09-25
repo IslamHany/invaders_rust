@@ -1,7 +1,23 @@
-use std::{error::Error, io, time::{Duration, Instant}, sync::mpsc, thread};
+use std::{
+    error::Error,
+    io,
+    sync::mpsc,
+    thread,
+    time::{Duration, Instant},
+};
 
-use crossterm::{terminal::{self, EnterAlternateScreen, LeaveAlternateScreen}, cursor::{Hide, Show}, ExecutableCommand, event::{self, Event, KeyCode}};
-use invaders::{frame::{new_frame, Drawable}, render::render, player::Player, invaders::Invaders};
+use crossterm::{
+    cursor::{Hide, Show},
+    event::{self, Event, KeyCode},
+    terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
+};
+use invaders::{
+    frame::{new_frame, Drawable},
+    invaders::Invaders,
+    player::Player,
+    render::render,
+};
 use rusty_audio::Audio;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -14,7 +30,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     audio.add("win", "win.wav");
 
     audio.play("startup");
-    
+
     //Terminal
     let mut stdout = io::stdout();
     terminal::enable_raw_mode()?;
@@ -28,21 +44,21 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut stdout = io::stdout();
         render(&mut stdout, &last_frame, &last_frame, true);
 
-        loop{
-            let curr_frame = match render_rx.recv(){
+        loop {
+            let curr_frame = match render_rx.recv() {
                 Ok(x) => x,
-                Err(_) => break
+                Err(_) => break,
             };
             render(&mut stdout, &last_frame, &curr_frame, false);
             last_frame = curr_frame;
         }
-    }); 
+    });
 
     //Game Loop
     let mut player = Player::new();
     let mut instant = Instant::now();
     let mut invaders = Invaders::new();
-    'gameloop: loop{
+    'gameloop: loop {
         //Per frame init
         let delta = instant.elapsed();
         instant = Instant::now();
@@ -63,9 +79,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         break 'gameloop;
                     }
 
-                    _ => {
-
-                    }
+                    _ => {}
                 }
             }
         }
@@ -73,11 +87,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         //Updates
         player.update(delta);
 
-        if invaders.update(delta){
+        if invaders.update(delta) {
             audio.play("move");
         }
 
-        if player.detect_hits(&mut invaders){
+        if player.detect_hits(&mut invaders) {
             audio.play("explode");
         }
 
@@ -93,7 +107,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         //Win or Lose
         if invaders.killed_all() {
             audio.play("win");
-            break 'gameloop; 
+            break 'gameloop;
         }
 
         if invaders.reached_bottom() {
@@ -101,7 +115,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             break 'gameloop;
         }
     }
-    
+
     //Cleanup
     drop(render_tx);
     render_handler.join().unwrap();
