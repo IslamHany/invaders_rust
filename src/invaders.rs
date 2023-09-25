@@ -32,11 +32,11 @@ impl Invaders {
             }
         }
 
-        return Self {
+        Self {
             army,
             move_timer: Timer::from_millis(2000),
             direction: 1,
-        };
+        }
     }
 
     pub fn update(&mut self, delta: Duration) -> bool {
@@ -72,11 +72,11 @@ impl Invaders {
             return true;
         }
 
-        return false;
+        false
     }
 
     pub fn killed_all(&self) -> bool {
-        return self.army.is_empty();
+        self.army.is_empty()
     }
 
     pub fn reached_bottom(&self) -> bool {
@@ -93,7 +93,7 @@ impl Invaders {
             return true;
         }
 
-        return false;
+        false
     }
 }
 

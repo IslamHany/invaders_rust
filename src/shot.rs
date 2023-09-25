@@ -13,12 +13,12 @@ pub struct Shot {
 
 impl Shot {
     pub fn new(x: usize, y: usize) -> Self {
-        return Shot {
-            x: x,
-            y: y,
+        Shot {
+            x,
+            y,
             explooding: false,
             timer: Timer::from_millis(50),
-        };
+        }
     }
 
     pub fn update(&mut self, delta: Duration) {
@@ -26,7 +26,7 @@ impl Shot {
 
         if self.timer.ready && !self.explooding {
             if self.y > 0 {
-                self.y = self.y - 1;
+                self.y -= 1;
             }
             self.timer.reset();
         }
@@ -38,7 +38,7 @@ impl Shot {
     }
 
     pub fn dead(&self) -> bool {
-        return (self.explooding && self.timer.ready) || (self.y == 0);
+        (self.explooding && self.timer.ready) || (self.y == 0)
     }
 }
 

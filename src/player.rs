@@ -15,11 +15,11 @@ pub struct Player {
 
 impl Player {
     pub fn new() -> Self {
-        return Self {
+        Self {
             x: NUM_COLS / 2,
             y: NUM_ROWS - 1,
             shots: Vec::new(),
-        };
+        }
     }
 
     pub fn move_left(&mut self) {
@@ -40,7 +40,7 @@ impl Player {
             return true;
         }
 
-        return false;
+        false
     }
 
     pub fn update(&mut self, delta: Duration) {
@@ -55,14 +55,12 @@ impl Player {
         let mut hit_something = false;
 
         for shot in self.shots.iter_mut() {
-            if !shot.explooding {
-                if invaders.kill_invader(shot.x, shot.y) {
-                    hit_something = true;
-                    shot.explode();
-                }
+            if !shot.explooding && invaders.kill_invader(shot.x, shot.y) {
+                hit_something = true;
+                shot.explode();
             }
         }
-        return hit_something;
+        hit_something
     }
 }
 
